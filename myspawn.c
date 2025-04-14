@@ -6,36 +6,39 @@
 
 extern char **environ;
 
-int main() {
+int spawnWait(const char *command, char *const argv[]){
     pid_t pid;
-    char *argv[] = {"echo", "Hello from the spawned process!", NULL};
     int status;
     posix_spawnattr_t attr;
 
-    // Initialize spawn attributes
+    //initialize spawn attributes
     posix_spawnattr_init(&attr);
 
-    // Set flags if needed, for example, to specify the scheduling policy
-    // posix_spawnattr_setflags(&attr, POSIX_SPAWN_SETSCHEDULER);
-
-    // Spawn a new process
-    if (posix_spawnp(&pid, "echo", NULL, &attr, argv, environ) != 0) {
-        perror("spawn failed");
+    //spawn a new process
+    if (posix_spawnp(&pid, command, NULL, &attr, argv, environ) != 0) {
+        perror("spawn failed 3");
         exit(EXIT_FAILURE);
     }
 
-    // Wait for the spawned process to terminate
-    if (waitpid(pid, &status, 0) == -1) {
+    //wait for the spawned process to end
+    if(waitpid(pid, &status, 0) == -1){
         perror("waitpid failed");
         exit(EXIT_FAILURE);
     }
 
-    if (WIFEXITED(status)) {
+    if(WIFEXITED(status)) {
         printf("Spawned process exited with status %d\n", WEXITSTATUS(status));
     }
 
     // Destroy spawn attributes
     posix_spawnattr_destroy(&attr);
 
-    return EXIT_SUCCESS;
+    exit(EXIT_SUCCESS);
+}
+
+int main(int argc, char *argv[]) {
+    // Set flags if needed, for example, to specify the scheduling policy
+    // posix_spawnattr_setflags(&attr, POSIX_SPAWN_SETSCHEDULER);
+
+    return spawnWait(argv[0], &argv[0]);
 }

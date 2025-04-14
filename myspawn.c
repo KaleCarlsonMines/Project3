@@ -16,7 +16,7 @@ int spawnWait(const char *command, char *const argv[]){
 
     //spawn a new process
     if (posix_spawnp(&pid, command, NULL, &attr, argv, environ) != 0) {
-        perror("spawn failed 3");
+        perror("spawn failed");
         exit(EXIT_FAILURE);
     }
 

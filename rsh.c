@@ -90,12 +90,12 @@ int main() {
 	pid_t pid = fork();
     	if(pid == 0){
             execvp(myspawn_path, tokens);
-            perror("spawn failed 1");
+            perror("spawn failed");
             exit(EXIT_FAILURE);
     	} else if(pid > 0){
             waitpid(pid, NULL, 0);
     	} else {
-            perror("spawn failed 2");
+            perror("spawn failed");
     	}
     
 	}

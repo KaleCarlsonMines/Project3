@@ -99,10 +99,10 @@ int main() {
         }
 	continue;
     }else if(strcmp(tokens[0], "cd") == 0){
-        if(tokens[1]){
-            if(chdir(tokens[1]) != 0) perror("cd failed");
-        } else if(tokens[2]){
-		printf("-rsh: cd: too many arguments");
+        if(tokens[2]){
+	    printf("-rsh: cd: too many arguments\n");
+        } else if(tokens[1]){
+	    if(chdir(tokens[1]) != 0) perror("cd failed");
     	}else {
             printf("cd missing arguments\n");
         }

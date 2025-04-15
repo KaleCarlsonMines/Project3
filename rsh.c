@@ -1,3 +1,4 @@
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <spawn.h>
@@ -10,6 +11,34 @@
 extern char **environ;
 
 char *allowed[N] = {"cp","touch","mkdir","ls","pwd","cat","grep","chmod","diff","cd","exit","help"};
+
+int spawnWait(const char *command, char *const argv[]){
+    pid_t pid;
+    int status;
+    posix_spawnattr_t attr;
+
+    //initialize spawn attributes
+    posix_spawnattr_init(&attr);
+
+    //spawn a new process
+    if (posix_spawnp(&pid, command, NULL, &attr, argv, environ) != 0) {
+        perror("spawn failed");
+        exit(EXIT_FAILURE);
+    }
+
+    //wait for the spawned process to end
+    if(waitpid(pid, &status, 0) == -1){
+        perror("waitpid failed");
+        exit(EXIT_FAILURE);
+    }
+/*
+    if(WIFEXITED(status)) {
+        printf("Spawned process exited with status %d\n", WEXITSTATUS(status));
+    }
+*/
+    // Destroy spawn attributes
+    posix_spawnattr_destroy(&attr);
+}
 
 int isAllowed(const char*cmd) {
 	// TODO
@@ -28,10 +57,6 @@ int main() {
 
     // TODO
     // Add variables as needed
-
-    char myspawn_path[4096];
-
-    realpath("./myspawn", myspawn_path);
 
     char line[256];
 
@@ -87,19 +112,11 @@ int main() {
         continue;
     } else{
 
-	pid_t pid = fork();
-    	if(pid == 0){
-            execvp(myspawn_path, tokens);
-            perror("spawn failed");
-            exit(EXIT_FAILURE);
-    	} else if(pid > 0){
-            waitpid(pid, NULL, 0);
-    	} else {
-            perror("spawn failed");
-    	}
+    	spawnWait(tokens[0], &tokens[0]);
     
 	}
    }
-
+   
     return 0;
 }
+
